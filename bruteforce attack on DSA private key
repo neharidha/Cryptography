@@ -1,0 +1,41 @@
+!pip install pycryptodome
+from Crypto.PublicKey import DSA
+from Crypto.Signature import DSS
+from Crypto.Hash import SHA256
+import io
+import itertools
+
+def verify(key):
+  try:
+    possible_key = DSA.import_key(io.StringIO(key).getvalue())
+    print("The key is correct:")
+    print(key)
+    return True
+  except ValueError:
+    return False
+    
+def bruteforce(key_with_error):
+  cset = "abcdefghijklmnopqrstuvwxyz1234567890"
+  permutation = itertools.product(cset, repeat=2)
+  for i in permutation:
+    new_key = key_with_error[:54] + "".join(i) + key_with_error[56:]
+  if verify(new_key):
+    return new_key
+  return None
+
+if __name__ == "__main__":
+key_with_error = '''-----BEGIN DSA PRIVATE KEY-----
+MIIBuQIBAAKBgQC973oUk7##7lilY1gwPAtXvTNDWbPbQhlstbax0b6LMyPCE1xf
+gwLoercCPm1OWl65pRExUR5g0CJxFZNekWQKh7fNqzMQt5fUKMMwtU4Im05M+sTb
+FeVYTiUrEdWjAbF5XvN6RgcEp7rL1ZX4VucElbxoAIvek+Aqfr0Zg/ltBQIVAKoK
++9q7j+T3esxgCTQMI2BQKSQnAn8dphjfU5jwzf+Nst9rkn1tZO0afBuzvNMRS8BF
+9LCJ2q2Nly9Orifz8IJqkhIGnEy802QyjUgLJAgYlBWarK1vJTQApgwN3t66mE9J
+Oc3gBgi9skZ/AQimaMb8YiHskbhn85ISpgJcvkjnL2KiTA/FtwTbzAj/Z5Sqv0xK
+ax2GAoGBAJpAieRPdSlKrM7x5gVlPZiI5vXEdw83IBIsK0W5XTtD5LeDfemLQDO9
+Qz49svcBuH6pdINnvQ3CrxaiJyJTMnfNNK9NuBeW2Q4KZJxQflXhcNuXcG0i2m0l
+QizOAkzQKKHeIMk5+7KoD3tgm4xzJvPewhaSca6upI3xVUobnjs/AhR7SchExgXv
+cJMj8CVGbPRdKkKBUg==
+-----END DSA PRIVATE KEY-----
+'''
+new_key = bruteforce(key_with_error)
+
